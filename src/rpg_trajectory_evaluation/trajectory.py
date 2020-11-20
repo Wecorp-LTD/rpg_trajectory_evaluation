@@ -91,6 +91,8 @@ class Trajectory:
                     self.start_time_sec, self.end_time_sec))
 
         self.abs_errors = {}
+        
+        self.var_errors = {}
 
         # we cache relative error since it is time-comsuming to compute
         self.rel_errors = {}
@@ -277,7 +279,41 @@ class Trajectory:
             self.abs_errors['abs_e_scale_stats'] = stats_scale
             print(Fore.GREEN+'...RMSE calculated.')
         return
+    
 
+    def compute_variances(self):
+        if self.var_errors:
+            print("Variances already calculated")
+        else:
+            print(Fore.RED+'Calculating variances...')
+            # align trajectory if necessary
+            self.align_trajectory()
+            var_x, var_y, var_z, var_yw, var_p, var_r =\
+                traj_err.compute_variances(self.p_es_aligned,
+                                           self.q_es_aligned,
+                                           self.p_gt,
+                                           self.q_gt)
+            var_stats = dict()
+            var_stats['x'] = float(var_x)
+            var_stats['y'] = float(var_y)
+            var_stats['z'] = float(var_z)
+            var_stats['yaw'] = float(var_yw)
+            var_stats['pitch'] = float(var_p)
+            var_stats['roll'] = float(var_r)
+
+            print(var_stats['x'] ) 
+            print(var_stats['y'] )
+            print(var_stats['z'] )
+            print(var_stats['yaw'])
+            print(var_stats['pitch'] )
+            print(var_stats['roll'] )
+
+
+            self.var_errors['variances'] = var_stats
+            
+            print(Fore.GREEN+'...Variances calculated.')
+        return
+         
     def write_errors_to_yaml(self):
         self.abs_err_stats_fn = os.path.join(
             self.saved_results_dir, 'absolute_err_statistics'+'_' +
@@ -292,6 +328,13 @@ class Trajectory:
             self.abs_errors['abs_e_scale_stats'], 'scale',
             self.abs_err_stats_fn)
 
+        self.var_err_stats_fn = os.path.join(
+            self.saved_results_dir, 'variance_err_statistics'+'_' +
+            self.align_str + self.suffix_str + '.yaml')
+        res_writer.update_and_save_stats(
+            self.var_errors['variances'], 'variances',
+            self.var_err_stats_fn)
+         
         self.rel_error_stats_fns = []
         for dist in self.rel_errors:
             cur_err = self.rel_errors[dist]

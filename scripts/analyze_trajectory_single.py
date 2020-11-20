@@ -51,6 +51,7 @@ def analyze_multiple_trials(results_dir, est_type, n_trials,
             preset_boxplot_percentages=preset_boxplot_percentages)
         if traj.data_loaded:
             traj.compute_absolute_error()
+            traj.compute_variances()
             if compute_odometry_error:
                 traj.compute_relative_errors()
         if traj.success:

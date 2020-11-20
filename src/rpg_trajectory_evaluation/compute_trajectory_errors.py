@@ -87,3 +87,33 @@ def compute_absolute_error(p_es_aligned, q_es_aligned, p_gt, q_gt):
     e_scale_perc = np.abs((np.divide(dist_es, dist_gt)-1.0) * 100)
 
     return e_trans, e_trans_vec, e_rot, e_ypr, e_scale_perc
+
+
+def compute_variances(p_es_aligned, q_es_aligned, p_gt, q_gt):
+    # pos var
+    e_trans_vec = (p_gt-p_es_aligned)
+    e_trans = np.sqrt(np.sum(e_trans_vec**2, 1))
+    e_trans_vec_squ = np.square(e_trans_vec)
+    
+    var_x = np.mean(e_trans_vec_squ[:,0])
+    var_y = np.mean(e_trans_vec_squ[:,1])
+    var_z = np.mean(e_trans_vec_squ[:,2])
+  
+    # orientation var
+    e_rot = np.zeros((len(e_trans,)))
+    e_ypr = np.zeros(np.shape(p_es_aligned))
+    for i in range(np.shape(p_es_aligned)[0]):
+        R_we = tf.matrix_from_quaternion(q_es_aligned[i, :])
+        R_wg = tf.matrix_from_quaternion(q_gt[i, :])
+        e_R = np.dot(R_we, np.linalg.inv(R_wg))
+        e_ypr[i, :] = tf.euler_from_matrix(e_R, 'rzyx')
+   
+    e_ypr_squ = np.square(e_ypr)
+    var_yw = np.mean(e_trans_vec_squ[:,0])
+    var_p = np.mean(e_trans_vec_squ[:,1])
+    var_r = np.mean(e_trans_vec_squ[:,2])
+    
+    return var_x, var_y, var_z, var_yw, var_p, var_r
+
+
+
