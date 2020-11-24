@@ -25,7 +25,7 @@ class Trajectory:
     default_boxplot_perc = [0.1, 0.2, 0.3, 0.4, 0.5]
 
     def __init__(self, results_dir, platform='', alg_name='', dataset_name='',
-                 align_type='sim3', align_num_frames=-1, suffix='',
+                 align_type='posyaw', align_num_frames=-1, suffix='',
                  est_type='traj_est',
                  nm_gt='stamped_groundtruth.txt',
                  nm_est='stamped_traj_estimate.txt',
@@ -35,7 +35,7 @@ class Trajectory:
 
         assert os.path.exists(results_dir),\
             "Specified directory {0} does not exist.".format(results_dir)
-        assert align_type in ['first_frame', 'sim3', 'se3']
+        assert align_type in ['first_frame', 'sim3', 'se3', 'posyaw']
 
         # information of the results, useful as labels
         self.platform = platform
