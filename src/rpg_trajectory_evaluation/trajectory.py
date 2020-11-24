@@ -301,14 +301,6 @@ class Trajectory:
             var_stats['pitch'] = float(var_p)
             var_stats['roll'] = float(var_r)
 
-            print(var_stats['x'] ) 
-            print(var_stats['y'] )
-            print(var_stats['z'] )
-            print(var_stats['yaw'])
-            print(var_stats['pitch'] )
-            print(var_stats['roll'] )
-
-
             self.var_errors['variances'] = var_stats
             
             print(Fore.GREEN+'...Variances calculated.')
